@@ -8,7 +8,7 @@ const {
   removeContact,
   addContact,
   updateContact,
-} = require("../../models/contacts");
+} = require("../../controllers/contacts");
 
 router.route("/").get(listContacts).post(addContact);
 
