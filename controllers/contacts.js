@@ -1,20 +1,13 @@
-const { readFile, writeFile } = require("fs/promises");
-const path = require("path");
-const uuid = require("uuid").v4;
-
 const catchAsync = require("../utils/catchAsync");
+const User = require("../models/contactModel");
 const AppError = require("../utils/appError");
-const { validateData } = require("../utils/userValidate");
-
-const dbPath = path.join("models", "contacts.json");
 
 /**
  * Get all contacts
  *
  */
-
 const listContacts = catchAsync(async (req, res) => {
-  const contacts = JSON.parse(await readFile(dbPath));
+  const contacts = await User.find();
 
   res.status(200).json({
     contacts,
@@ -25,13 +18,8 @@ const listContacts = catchAsync(async (req, res) => {
  * Get contact by Id
  *
  */
-
 const getContactById = catchAsync(async (req, res, next) => {
-  const allContacts = JSON.parse(await readFile(dbPath));
-
-  const contact = allContacts.find((elem) => elem.id === req.params.contactId);
-
-  if (!contact) return next(new AppError(404, "Not found"));
+  const { contact } = req;
 
   res.status(200).json({
     contact,
@@ -42,21 +30,11 @@ const getContactById = catchAsync(async (req, res, next) => {
  * Add new contact by object - {name, email, phone}
  *
  */
-
 const addContact = catchAsync(async (req, res, next) => {
-  const { error, value } = validateData(req.body);
-
-  if (error) return next(new AppError(400, "missing required name field"));
-
-  const contacts = JSON.parse(await readFile(dbPath));
-
-  const newContact = {
-    id: uuid(),
-    ...value,
-  };
-
-  contacts.push(newContact);
-  await writeFile(dbPath, JSON.stringify(contacts));
+  const newContact = await User.create({
+    favorite: false,
+    ...req.body,
+  });
 
   res.status(201).json({
     contact: newContact,
@@ -67,22 +45,9 @@ const addContact = catchAsync(async (req, res, next) => {
  * Remove contact by Id
  *
  */
-
 const removeContact = catchAsync(async (req, res, next) => {
-  const allContacts = JSON.parse(await readFile(dbPath));
-
-  const removedContact = allContacts.find(
-    (elem) => elem.id === req.params.contactId
-  );
-
-  const indexRemovedContact = allContacts.indexOf(removedContact);
-
-  if (indexRemovedContact === -1) {
-    return next(new AppError(404, "Not found"));
-  }
-
-  allContacts.splice(indexRemovedContact, 1);
-  await writeFile(dbPath, JSON.stringify(allContacts));
+  const { contactId } = req.params;
+  await User.findByIdAndDelete(contactId);
 
   res.status(200).json({
     message: "contact deleted",
@@ -93,30 +58,44 @@ const removeContact = catchAsync(async (req, res, next) => {
  * Update contact by Id and body as {name, phone, email}
  *
  */
-
 const updateContact = catchAsync(async (req, res, next) => {
-  const contacts = JSON.parse(await readFile(dbPath));
+  const { contactId } = req.params;
 
-  const contactId = req.params.contactId;
-  const { value, error } = validateData(req.body);
-
-  if (error) return next(new AppError(400, "missing fields"));
-
-  const newContact = {
-    id: contactId,
-    ...value,
-  };
-
-  const oldContact = contacts.find((elem) => elem.id === contactId);
-
-  const indexPrevContact = contacts.indexOf(oldContact);
-
-  contacts.splice(indexPrevContact, 1, newContact);
-
-  await writeFile(dbPath, JSON.stringify(contacts));
+  const newContact = await User.findByIdAndUpdate(
+    contactId,
+    {
+      name: req.body.name,
+      email: req.body.email,
+      phone: req.body.phone,
+      favorite: req.body.favorite,
+    },
+    {
+      new: true,
+    }
+  );
 
   res.status(200).json({
     contact: newContact,
+  });
+});
+
+const updateStatusContact = catchAsync(async (req, res, next) => {
+  const { contactId } = req.params;
+  const { favorite } = req.body;
+
+  if (typeof favorite !== "boolean")
+    return next(new AppError(400, "missing field favorite"));
+
+  const newFavoriteStatus = await User.findByIdAndUpdate(
+    contactId,
+    { $set: { favorite } },
+    {
+      new: true,
+    }
+  );
+
+  res.status(200).json({
+    contact: newFavoriteStatus,
   });
 });
 
@@ -126,4 +105,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
