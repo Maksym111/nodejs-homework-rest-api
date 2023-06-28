@@ -15,7 +15,7 @@ const {
   checkContactById,
   checkCreateContactData,
   checkUpdateContactData,
-} = require("../../middlewares/contactMiddlewares");
+} = require("../../middlewares/contacts");
 
 router.route("/").get(listContacts).post(checkCreateContactData, addContact);
 
