@@ -1,11 +1,11 @@
 const { Types } = require("mongoose");
 
 const catchAsync = require("../../utils/catchAsync");
-const User = require("../../models/contactModel");
+const Contact = require("../../models/contactModel");
 const AppError = require("../../utils/appError");
 
 /**
- * Validates id and checks if the user data exists
+ * Validates id and checks if the Contact data exists
  *
  */
 exports.checkContactById = catchAsync(async (req, res, next) => {
@@ -15,7 +15,7 @@ exports.checkContactById = catchAsync(async (req, res, next) => {
 
   if (!isIdValid) return next(new AppError(400, "Bad request"));
 
-  const contact = await User.findById(contactId);
+  const contact = await Contact.findById(contactId);
 
   if (!contact) return next(new AppError(404, "Not found"));
 

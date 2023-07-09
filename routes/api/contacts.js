@@ -17,6 +17,10 @@ const {
   checkUpdateContactData,
 } = require("../../middlewares/contacts");
 
+const { protect } = require("../../middlewares/auth");
+
+router.use(protect);
+
 router.route("/").get(listContacts).post(checkCreateContactData, addContact);
 
 router.use("/:contactId", checkContactById);

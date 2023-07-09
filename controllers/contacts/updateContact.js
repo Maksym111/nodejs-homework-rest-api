@@ -1,5 +1,5 @@
 const catchAsync = require("../../utils/catchAsync");
-const User = require("../../models/contactModel");
+const Contact = require("../../models/contactModel");
 
 /**
  * Update contact by Id and body as {name, phone, email}
@@ -8,7 +8,7 @@ const User = require("../../models/contactModel");
 exports.updateContact = catchAsync(async (req, res, next) => {
   const { contactId } = req.params;
 
-  const newContact = await User.findByIdAndUpdate(
+  const newContact = await Contact.findByIdAndUpdate(
     contactId,
     {
       name: req.body.name,

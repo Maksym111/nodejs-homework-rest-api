@@ -6,10 +6,13 @@ const Contact = require("../../models/contactModel");
  *
  */
 exports.addContact = catchAsync(async (req, res, next) => {
-  const newContact = await Contact.create({
+  const newContactData = await Contact.create({
+    owner: req.user,
     favorite: false,
     ...req.body,
   });
+
+  const newContact = await Contact.create(newContactData);
 
   res.status(201).json({
     contact: newContact,

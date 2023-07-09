@@ -1,5 +1,7 @@
 const Joi = require("joi");
 const regexPhoneNumber = /^\(\d{3}\)\d{3}-\d{4}$/;
+const PASSWD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,128})/;
 
 exports.validateData = (data) =>
   Joi.object()
@@ -9,5 +11,16 @@ exports.validateData = (data) =>
       email: Joi.string().email().required(),
       phone: Joi.string().regex(regexPhoneNumber).required(),
       favorite: Joi.boolean(),
+    })
+    .validate(data);
+
+exports.registerValidateData = (data) =>
+  Joi.object()
+    .options({ abortEarly: false })
+    .keys({
+      email: Joi.string().email().required(),
+      password: Joi.string().regex(PASSWD_REGEX).required(),
+      subscription: Joi.string().valid("starter", "pro", "business"),
+      token: Joi.string(),
     })
     .validate(data);

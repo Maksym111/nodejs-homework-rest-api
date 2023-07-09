@@ -6,6 +6,8 @@ const mongoose = require("mongoose");
 
 dotenv.config({ path: "./.env" });
 
+const authRoutes = require("./routes/api/authRoutes");
+const userRoutes = require("./routes/api/userRoutes");
 const contactsRouter = require("./routes/api/contacts");
 
 const app = express();
@@ -26,6 +28,8 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res) => {
@@ -33,7 +37,9 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message });
+  res.status(500).json({
+    message: err.message,
+  });
 });
 
 module.exports = app;
