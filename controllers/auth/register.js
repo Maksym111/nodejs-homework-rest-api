@@ -9,13 +9,14 @@ exports.register = catchAsync(async (req, res) => {
 
   const newUser = await User.create(newUserData);
 
-  newUser.password = undefined;
-  newUser.token = undefined;
-
   const token = signToken(newUser.id);
   await User.findByIdAndUpdate(newUser._id, { token: token });
 
+  newUser.password = undefined;
+  newUser.token = undefined;
+
   res.status(201).json({
     user: newUser,
+    token,
   });
 });

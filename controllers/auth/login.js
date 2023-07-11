@@ -1,8 +1,9 @@
 const User = require("../../models/userModel");
-const { signToken } = require("../../services/signToken");
+// const { signToken } = require("../../services/signToken");
 const AppError = require("../../utils/appError");
 
 const catchAsync = require("../../utils/catchAsync");
+const { userSignInHandler } = require("../../utils/userSignInHandler");
 
 exports.login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
@@ -10,18 +11,14 @@ exports.login = catchAsync(async (req, res) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) throw new AppError(401, "Email or password is wrong");
-  user.token = undefined;
 
   const isValidPassword = await user.checkPassword(password, user.password);
 
   if (!isValidPassword) throw new AppError(401, "Email or password is wrong");
 
-  user.password = undefined;
-
-  const token = signToken(user.id);
+  const resDataUser = userSignInHandler(user);
 
   res.status(200).json({
-    user,
-    token,
+    resDataUser,
   });
 });

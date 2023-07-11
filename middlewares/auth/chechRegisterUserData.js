@@ -1,8 +1,8 @@
 const catchAsync = require("../../utils/catchAsync");
-const Contact = require("../../models/contactModel");
 const AppError = require("../../utils/appError");
 
 const { registerValidateData } = require("../../utils/userValidate");
+const User = require("../../models/userModel");
 
 /**
  * Validates data User middleware
@@ -12,7 +12,7 @@ exports.checkRegisterUserData = catchAsync(async (req, res, next) => {
 
   if (error) throw new AppError(400, "Invalid user data");
 
-  const existContact = await Contact.exists({
+  const existContact = await User.exists({
     email: value.email,
   });
 

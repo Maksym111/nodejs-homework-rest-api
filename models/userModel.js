@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 
 const userSchema = mongoose.Schema(
@@ -21,6 +22,7 @@ const userSchema = mongoose.Schema(
       type: String,
       default: null,
     },
+    avatarURL: String,
   },
   {
     versionKey: false,
@@ -28,6 +30,12 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    const emailHash = crypto.createHash("md5").update(this.email).digest("hex");
+
+    this.avatarURL = `https://www.gravatar.com/avatar/${emailHash}.jpg?d=retro`;
+  }
+
   if (!this.isModified("password")) return next();
 
   // hash passwd only when passwd changed
