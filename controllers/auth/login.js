@@ -19,6 +19,6 @@ exports.login = catchAsync(async (req, res) => {
   const resDataUser = userSignInHandler(user);
 
   res.status(200).json({
-    resDataUser,
+    ...resDataUser,
   });
 });

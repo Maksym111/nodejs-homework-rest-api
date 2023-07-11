@@ -9,7 +9,6 @@ const fse = require("fs-extra");
 const AppError = require("../utils/appError");
 
 const tempDir = path.join(__dirname, "../", "tmp").replace(/\\/g, "/");
-console.log("TempDir", tempDir);
 
 class ImageService {
   static upload(name) {
