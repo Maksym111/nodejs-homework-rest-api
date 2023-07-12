@@ -3,16 +3,16 @@ const request = require("supertest");
 const app = require("../../server");
 
 describe("POST /auth/login", () => {
-  //   it("should return unauth error", async () => {
-  //     const testData = {
-  //       email: "example@example.com",
-  //       password: "qwe@E1234",
-  //     };
+  it("should return unauth error", async () => {
+    const testData = {
+      email: "example@example.com",
+      password: "qwe@E1234",
+    };
 
-  //     const res = await request(app).post("/api/auth/users/login").send(testData);
+    const res = await request(app).post("/api/auth/users/login").send(testData);
 
-  //     expect(res.statusCode).toBe(401);
-  //   });
+    expect(res.statusCode).toBe(401);
+  });
 
   it("should return status code 200", async () => {
     const testData = {
