@@ -18,6 +18,10 @@ exports.login = catchAsync(async (req, res) => {
 
   if (!isValidPassword) throw new AppError(401, "Email or password is wrong");
 
+  if (!user.verify) {
+    throw new AppError(401, "User is not verify!");
+  }
+
   const resDataUser = userSignInHandler(user);
 
   res.status(200).json({

@@ -22,5 +22,16 @@ exports.registerValidateData = (data) =>
       password: Joi.string().regex(PASSWD_REGEX).required(),
       subscription: Joi.string().valid("starter", "pro", "business"),
       token: Joi.string(),
+      avatarURL: Joi.string(),
+      verify: Joi.boolean().default(false),
+      verificationToken: Joi.string(),
     })
     .validate(data);
+
+exports.emailValidate = (email) =>
+  Joi.object()
+    .options({ abortEarly: false })
+    .keys({
+      email: Joi.string().email().required(),
+    })
+    .validate(email);
